@@ -6,6 +6,11 @@
   "author": "DAVID ALEJANDRO DE LOS REYES OSTOS",
   "type": "commonjs",
   "main": "index.js",
+
+   "devDependencies": {
+    "tailwindcss": "^4.0.0"
+  },
+
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
