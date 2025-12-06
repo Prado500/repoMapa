@@ -212,25 +212,29 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Crear marcadores
+// Crear marcadores
 function createMarkers() {
-    // Icono personalizado para puntos de reciclaje
-    const recycleIcon = L.divIcon({
-        html: `
-            <div class="relative">
-                <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
-                    <i data-lucide="recycle" class="w-6 h-6 text-white"></i>
+    // Recorrer cada ubicación con su índice
+    locations.forEach((location, index) => {
+        // El número será la posición en la lista (1-10)
+        const numero = index + 1;
+        
+        const recycleIcon = L.divIcon({
+            html: `
+                <div class="relative">
+                    <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+                        <i data-lucide="recycle" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <div class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-xs text-white font-bold">
+                        ${numero}  <!-- Muestra 1, 2, 3... 10 -->
+                    </div>
                 </div>
-                <div class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-xs text-white font-bold">
-                    ${locations.length}
-                </div>
-            </div>
-        `,
-        className: 'custom-div-icon',
-        iconSize: [40, 40],
-        iconAnchor: [20, 40]
-    });
-    
-    locations.forEach(location => {
+            `,
+            className: 'custom-div-icon',
+            iconSize: [40, 40],
+            iconAnchor: [20, 40]
+        });
+        
         const marker = L.marker([location.lat, location.lng], { 
             icon: recycleIcon,
             riseOnHover: true
