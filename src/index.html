@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa Interactivo de Ibagué</title>
+    <title>Sistema de Recolección - Plasticket App</title>
+    
     <!-- Tailwind CSS -->
     <link rel="stylesheet" href="./output.css">
     
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
-    <!-- Lucide Icons (usando CDN) -->
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     
     <!-- Leaflet JS -->
@@ -21,7 +22,7 @@
             margin: 0;
             padding: 0;
             height: 100%;
-            font-family: system-ui, -apple-system, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
         }
         
         .leaflet-container {
@@ -29,23 +30,115 @@
             width: 100%;
             z-index: 0;
         }
+        
+        /* Estilos para sombras y bordes */
+        .shadow-custom {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
     </style>
 </head>
-<body>
-    <!-- El mapa se creará aquí -->
-    <div id="map"></div>
+<body class="bg-gray-50">
+    <!-- Barra superior -->
+    <div class="absolute top-0 left-0 right-0 bg-white shadow-md z-40 p-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                <i data-lucide="recycle" class="w-6 h-6 text-white"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-gray-800 text-xl">Plasticket App</h1>
+                <p class="text-sm text-gray-600">Sistema de gestión de recolección</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <div class="text-right">
+                <p class="text-sm text-gray-600">Solicitudes activas</p>
+                <p class="font-bold text-2xl text-green-600">10</p>
+            </div>
+            <div class="h-8 w-px bg-gray-300"></div>
+            <button class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center gap-2">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                Nueva solicitud
+            </button>
+        </div>
+    </div>
     
-    <!-- Panel de información (inicialmente oculto) -->
-    <div id="infoPanel" class="hidden absolute top-4 right-4 w-96 bg-white rounded-lg shadow-2xl p-6 max-h-96 overflow-y-auto z-[1000]">
-        <!-- Se llenará con JavaScript -->
+    <!-- Mapa -->
+    <div id="map" class="absolute inset-0"></div>
+    
+    <!-- Panel de información (lado derecho) -->
+    <div id="infoPanel" class="hidden absolute top-20 right-4 w-96 bg-white rounded-xl shadow-2xl z-40 overflow-hidden">
+        <!-- Contenido se llena con JavaScript -->
+    </div>
+    
+    <!-- Panel de estadísticas (lado izquierdo) -->
+    <div class="absolute top-20 left-4 w-64 bg-white rounded-xl shadow-xl z-40 p-4">
+        <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+            Estadísticas del día
+        </h3>
+        
+        <div class="space-y-3">
+            <div class="bg-blue-50 p-3 rounded-lg">
+                <p class="text-sm text-gray-600">Solicitudes completadas</p>
+                <p class="font-bold text-2xl text-blue-600">7</p>
+            </div>
+            
+            <div class="bg-green-50 p-3 rounded-lg">
+                <p class="text-sm text-gray-600">Material recolectado</p>
+                <p class="font-bold text-2xl text-green-600">1,245 kg</p>
+            </div>
+            
+            <div class="bg-purple-50 p-3 rounded-lg">
+                <p class="text-sm text-gray-600">Equipos activos</p>
+                <p class="font-bold text-2xl text-purple-600">5</p>
+            </div>
+        </div>
+        
+        <div class="mt-6 pt-4 border-t">
+            <h4 class="font-medium text-gray-700 mb-2">Tipos de material</h4>
+            <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-600">Plástico</span>
+                    <span class="font-medium">35%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-500 h-2 rounded-full" style="width: 35%"></div>
+                </div>
+                
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-600">Papel/Cartón</span>
+                    <span class="font-medium">25%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-green-500 h-2 rounded-full" style="width: 25%"></div>
+                </div>
+            </div>
+        </div>
     </div>
     
     <!-- Script principal -->
     <script src="./mapa.js"></script>
     
     <script>
-        // Inicializar iconos de Lucide
+        // Inicializar iconos
         lucide.createIcons();
+        
+        // Mostrar mensaje de bienvenida
+        setTimeout(() => {
+            const notification = document.createElement('div');
+            notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+            notification.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <i data-lucide="map-pin" class="w-5 h-5"></i>
+                    <span>Haz clic en cualquier marcador para ver detalles</span>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.remove(), 5000);
+            lucide.createIcons();
+        }, 1000);
     </script>
 </body>
 </html>
